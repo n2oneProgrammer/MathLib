@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\MathLib.AI\MathLib.AI.csproj" />
   </ItemGroup>
 
 </Project>

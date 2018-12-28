@@ -22,12 +22,14 @@ namespace MathLib
         }
         public Matrix(double[] tab)
         {
-            double[][] newMatrix = new double[tab.Length][];
-            for(int i=0;i<tab.Length;i++)
+            _matrix = new double[tab.Length][];
+            
+            for (int i=0;i<tab.Length; i++)
             {
-                newMatrix[i][0] = tab[i];
+                _matrix[i] = new double[] { tab[i] };
+                
             }
-            _matrix = newMatrix;
+            
         }
         public Matrix(double[][] tab)
         {
@@ -73,6 +75,18 @@ namespace MathLib
             }
             return new Matrix(newMatrix);
         }
+        public static Matrix operator -(double a, Matrix m)
+        {
+            for (var x = 0; x < m.Value.Length; x++)
+            {
+                for (var y = 0; y < m.Value[x].Length; y++)
+                {
+                    m.Value[x][y] = a - m.Value[x][y];
+                }
+            }
+
+            return m;
+        }
         public static Matrix operator *(Matrix a, Matrix b)
         {
             var newMatrix = CreateJagged(a.Value.Length, b.Value[0].Length);
@@ -85,7 +99,7 @@ namespace MathLib
                     for (int x = 0; x < b.Value.Length; x++)
                     {
                         value += a.Value[row][x] * b.Value[x][cols];
-                        Console.WriteLine(row + ":" + cols + "  " + x + " = " + value);
+                       // Console.WriteLine(row + ":" + cols + "  " + x + " = " + value);
                     }
                     newMatrix[row][cols] = value;
                     
@@ -236,7 +250,16 @@ namespace MathLib
 
             return adjugate/detA;//adjugate/detA
         }
-
+        public void Initialize(Func<double> elementInitializer)
+        {
+            for (var x = 0; x < _matrix.Length; x++)
+            {
+                for (var y = 0; y < _matrix[x].Length; y++)
+                {
+                    _matrix[x][y] = elementInitializer();
+                }
+            }
+        }
         #endregion
         #region EqualeOPerators
         public static bool operator ==(Matrix a, Matrix b)
