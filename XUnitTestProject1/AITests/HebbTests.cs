@@ -9,16 +9,16 @@ namespace AITest
     public class HebbTests
     {
         double[][] number = new double[][]{
-           new double[]{ 1, 1, 1, 1, -1, 1, 1, -1, 1, 1, 1, 1 },//-1
-           new double[]{ -1, -1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1 },//1
-           new double[]{ 1, 1, 1, -1, 1, -1, 1, -1, -1, 1, 1, 1 },//2
-           new double[]{ 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1 },//3
-           new double[]{ 1, -1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1 },//4
-           new double[]{ 1, 1, 1, -1, 1, -1, -1, -1, 1, 1, 1, 1 },//5
-           new double[]{ 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, 1 },//6
-           new double[]{ 1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1 },//7
-           new double[]{ 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1 },//8
-           new double[]{ 1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1 },//9
+           new double[]{ 3, 3, 3, 3, -3, 3, 3, -3, 3, 3, 3, 3 },//0
+           new double[]{ -3, -3, 3, -3, -3, 3, -3, -3, 3, -3, -3, 3 },//1
+           new double[]{ 3, 3, 3, -3, 3, -3, 3, -3, -3, 3, 3, 3 },//2
+           new double[]{ 3, 3, 3, -3, -3, 3, 3, 3, 3, 3, 3, 3 },//3
+           new double[]{ 3, -3, 3, 3, 3, 3, -3, -3, 3, -3, -3, 3 },//4
+           new double[]{ 3, 3, 3, -3, 3, -3, -3, -3, 3, 3, 3, 3 },//5
+           new double[]{ 3, 3, 3, 3, -3, -3, 3, 3, 3, 3, 3, 3 },//6
+           new double[]{ 3, 3, 3, -3, -3, 3, -3, -3, 3, -3, -3, 3 },//7
+           new double[]{ 3, 3, 3, 3, -3, 3, 3, 3, 3, 3, 3, 3 },//8
+           new double[]{ 3, 3, 3, 3, 3, 3, -3, -3, 3, 3, 3, 3 },//9
            #region numbers
            //0=-1
 
@@ -109,14 +109,42 @@ namespace AITest
         {
             int[] NeuronsInLayers = new int[] { number[0].Length, 10 };
             HebbNetwork network = new HebbNetwork(NeuronsInLayers, 0.3);
-
+            
             for (int i = 0; i < number.Length; i++)
             {
-                double[] target = Enumerable.Range(1, 10).Select(x => -1d).ToArray();
-                target[i] = 1;
-                network.Train(RandomValues(number[i]), target);
+                    double[] target = Enumerable.Range(1, 10).Select(x => -1d).ToArray();
+                    target[i] = 1;
+                    network.Train(RandomValues(number[i]), target);
             }
+            
+            bool[] iscurrent = new bool[number.Length];
+            string wyniki = "";
+            for (int i = 0; i < number.Length; i++)
+            {
+                double[] res = network.Query(RandomValues(number[i]));
+                var max = res.Max();
+                var f = res.ToList().IndexOf(max);
+                iscurrent[i] = (f == i);
 
+                wyniki += "\n" + i + ":" + f;
+                //throw new Exception("Not Learned network. Errored in " + i);
+            }
+            if (((double)iscurrent.Count(x => x) / (double)iscurrent.Length) < 0.7) throw new Exception("Ta siec jes tdo dupy wyniki:" + wyniki);
+        }
+        [Fact]
+        public void RecognitionNumber3Layers()
+        {
+            int[] NeuronsInLayers = new int[] { number[0].Length, number[0].Length*2+1, 10 };
+            HebbNetwork network = new HebbNetwork(NeuronsInLayers, 0.3);
+            for (int j = 0; j < 20; j++)
+            {
+                for (int i = 0; i < number.Length; i++)
+                {
+                    double[] target = Enumerable.Range(1, 10).Select(x => -1d).ToArray();
+                    target[i] = 1;
+                    network.Train(RandomValues(number[i]), target);
+                }
+            }
             bool[] iscurrent = new bool[number.Length];
             string wyniki = "";
             for (int i = 0; i < number.Length; i++)

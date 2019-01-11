@@ -8,69 +8,55 @@ namespace MathLib
 {
     public enum GraphTypes
     {
-        LINE=3
+        LINE=3,POINT=0
     }
     public static class Graph
     {
 
-        public struct GraphInfo
+        public class Data
         {
-            string title;
-            string titleAxisX;
-            string titleAxisY;
-            GraphTypes type;
-            public GraphInfo(string title,string titleAxisX,string titleAxisY,GraphTypes type)
+            public double[] data, sign;
+            public GraphTypes type;
+            public string name;
+            public Data(double[] data, double[] sign,string name, GraphTypes type = GraphTypes.POINT)
             {
-                
-                this.title = title;
-                this.titleAxisX = titleAxisX;
-                this.titleAxisY = titleAxisY;
+                this.data = data;
+                this.sign = sign;
+                this.name = name;
                 this.type = type;
             }
-            public string Title {get{ return title; } }
-            public string TitleAxisX {get{ return titleAxisX; } }
-            public string TitleAxisY {get{ return titleAxisY; } }
-            public GraphTypes TypeGraph {get{ return type; } }
+            public Data(double[] data, string name, GraphTypes type = GraphTypes.POINT)
+            {
+                this.data = data;
+                sign = Enumerable.Range(0,data.Length).Select(x => (double)x).ToArray();
+                this.name = name;
+                this.type = type;
+            }
+            public Data(Func<double,double> func,double start,double step,double end, string name, GraphTypes type = GraphTypes.LINE)
+            {
+                List<double> data = new List<double>(), sign=new List<double>();
+                for(double i=start;i <= end;i += step)
+                {
+                    data.Add(func(i));
+                    sign.Add(i);
+                }
+                this.data = data.ToArray();
+                this.sign = sign.ToArray();
+                this.name = name;
+                this.type = type;
+            }
+
+            
+
+
         }
 
-        public static void Create(double[] nums,GraphInfo info)
+        public static void Create(Data[] dates,string Title="",string TitleX="",string TitleY="")
         {
             Application.EnableVisualStyles();
 
-            Application.Run(new Form1(nums,info));
+            Application.Run(new Form1(dates,Title,TitleX,TitleY));
         }
-        public static void Create(DomainFunc domain,Func<double,double> func, GraphInfo info)
-        {
-            double[] nums;
-            double[] d;
-            if (domain.Type == TypeDomain.OTHER)
-            {
-                d = domain.Domain;
-                nums = new double[d.Length];
-
-                for(int i=0;i< d.Length;i++)
-                {
-                    nums[i] = func(d[i]);
-                }
-                
-            }
-            else
-            {
-                
-                int count = (int)(domain.MaxValue - domain.MinValue)+1;
-                nums = new double[count];
-                d = new double[count];
-
-                for(double i=domain.MinValue,j=0;i<=domain.MaxValue;i++,j++)
-                {
-                    d[(int)j] = i;
-                    nums[(int)j] = func(i);
-                }
-            }
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(d,nums,info));
-
-        }
+        
     }
 }
